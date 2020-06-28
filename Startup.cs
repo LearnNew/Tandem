@@ -25,6 +25,8 @@ namespace Tandem
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            //add swagger doc
+            services.AddSwaggerDocument();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +45,10 @@ namespace Tandem
             {
                 endpoints.MapControllers();
             });
+
+            //add swagger doc
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
         }
     }
 }
