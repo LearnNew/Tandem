@@ -24,5 +24,13 @@ namespace Tandem.Interfaces
         /// <param name="contact"></param>
         /// <returns></returns>
         Task AddContactAsync(Contact contact);
+
+        /// <summary>
+        /// Returns contact by email address
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        Task<Contact> GetContactAsync(string email);
+
     }
 }

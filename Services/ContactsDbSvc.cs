@@ -36,13 +36,13 @@ namespace Tandem.Services
         {
             //needless to validate query as we are going to support query strings created within
             //this solution
-            var inputquery = this._container.GetItemQueryIterator<Contact>(new QueryDefinition(query));
+            var queryResults = this._container.GetItemQueryIterator<Contact>(new QueryDefinition(query));
             List<Contact> results = new List<Contact>();
 
             //prepare return collection with all results
-            while (inputquery.HasMoreResults)
+            while (queryResults.HasMoreResults)
             {
-                var response = await inputquery.ReadNextAsync();
+                var response = await queryResults.ReadNextAsync();
 
                 results.AddRange(response.ToList());
             }
@@ -52,6 +52,21 @@ namespace Tandem.Services
         public async Task AddContactAsync(Contact contact)
         {
             await this._container.CreateItemAsync<Contact>(contact, new PartitionKey(contact.Id));
+        }
+
+        public async Task<Contact> GetContactAsync(string email)
+        {
+            Contact result = new Contact();
+            QueryDefinition queryDefinition = new QueryDefinition(@"select * from Contacts where Contacts.emailaddress = @email")
+                                                 .WithParameter("@email", email);
+            FeedIterator<Contact> feedIterator = this._container.GetItemQueryIterator<Contact>(queryDefinition);
+
+            while (feedIterator.HasMoreResults)
+            {
+                var response = await feedIterator.ReadNextAsync();
+                return response.FirstOrDefault();
+            }
+            return result;
         }
     }
 }

@@ -27,13 +27,6 @@ namespace Tandem.Controllers
             _logger = logger;
         }
 
-        // GET: api/Contacts
-        [HttpGet]
-        public async Task<IEnumerable<Contact>> Get()
-        {
-            return (await _contactsDbService.GetContactsAsync(@"Select * From Contacts"));
-        }
-
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult> CreateAsync(PostContact postContact)
@@ -57,6 +50,25 @@ namespace Tandem.Controllers
                 throw new ApplicationException(@"Could not create contact"); 
             }
             return CreatedAtAction(nameof(Get), null, null);
+        }
+
+        // GET: api/Contacts
+        [HttpGet]
+        public async Task<Contact> Get(string email)
+        {
+            try
+            {
+                return (await _contactsDbService.GetContactAsync(email));
+            }
+            catch (Exception ex)
+            {
+                var message = string.Format(@"Could not find user {0} Exception {1}",
+                    email,
+                    ex.Message);
+
+                _logger.LogWarning(message);
+                throw new ApplicationException(@"Could not retrieve contact");
+            }
         }
     }
 }
